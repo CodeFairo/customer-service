@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: Customer Service API
+  version: 1.0.0
+  description: >
+    Simplified REST API for managing customers in the banking system.
+    Optimized for exam presentation: only essential endpoints.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+
+tags:
+  - name: Customers
+    description: Customer management endpoints
+
+paths:
+  /customers:
+    post:
+      tags: [Customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerRequestDTO'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerDTO'
+              example:
+                id: "cst-123"
+                customerType: PERSONAL
+                documentType: DNI
+                documentNumber: "12345678"
+                firstName: "Carlos"
+                lastName: "Ramírez"
+                status: ACTIVE
+        '400': { description: Invalid input }
+        '409': { description: Duplicate document }
+
+    get:
+      tags: [Customers]
+      summary: List all customers
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [PERSONAL, BUSINESS]
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/CustomerDTO' }
+              example:
+                - id: "cst-123"
+                  customerType: PERSONAL
+                  firstName: "Carlos"
+                  lastName: "Ramírez"
+                  documentType: DNI
+                  documentNumber: "12345678"
+                  status: ACTIVE
+                - id: "cst-124"
+                  customerType: BUSINESS
+                  businessName: "Inversiones SAC"
+                  documentType: RUC
+                  documentNumber: "20123456789"
+                  status: ACTIVE
+
+  /customers/{customerId}:
+    get:
+      tags: [Customers]
+      summary: Get customer by ID
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CustomerDTO' }
+              example:
+                id: "cst-123"
+                customerType: PERSONAL
+                documentType: DNI
+                documentNumber: "12345678"
+                firstName: "Carlos"
+                lastName: "Ramírez"
+                status: ACTIVE
+        '404': { description: Customer not found }
+
+  /customers/{customerId}/summary:
+    get:
+      tags: [Customers]
+      summary: Get consolidated summary of a customer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer summary including accounts, credits, and cards
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CustomerSummaryDTO' }
+              example:
+                id: "cst-123"
+                fullName: "Carlos Ramírez"
+                accounts:
+                  - id: "acc-456"
+                    type: SAVINGS
+                    balance: 1500.75
+                credits:
+                  - id: "crd-789"
+                    type: PERSONAL
+                    outstandingBalance: 5000.00
+                cards:
+                  - id: "card-101"
+                    type: PERSONAL
+                    availableCredit: 2000.00
+
+components:
+  schemas:
+    CustomerRequestDTO:
+      type: object
+      properties:
+        customerType: { type: string, enum: [PERSONAL, BUSINESS] }
+        documentType: { type: string }
+        documentNumber: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        businessName: { type: string }
+      required: [customerType, documentType, documentNumber]
+
+    CustomerDTO:
+      type: object
+      properties:
+        id: { type: string }
+        customerType: { type: string }
+        documentType: { type: string }
+        documentNumber: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        businessName: { type: string }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+
+    CustomerSummaryDTO:
+      type: object
+      properties:
+        id: { type: string }
+        fullName: { type: string }
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountSummaryDTO'
+        credits:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditSummaryDTO'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardSummaryDTO'
+
+    AccountSummaryDTO:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        balance: { type: number, format: double }
+
+    CreditSummaryDTO:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        outstandingBalance: { type: number, format: double }
+
+    CardSummaryDTO:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        availableCredit: { type: number, format: double }
