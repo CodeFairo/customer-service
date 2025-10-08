@@ -3,11 +3,9 @@ package com.proyecto.customer.infrastructure.adapter.in.web;
 import com.proyecto.customer.api.CustomersApi;
 import com.proyecto.customer.application.port.in.CreateCustomerUseCase;
 import com.proyecto.customer.application.port.in.FindCustomerUseCase;
-import com.proyecto.customer.application.port.in.GetCustomerSummaryUseCase;
 import com.proyecto.customer.infrastructure.mapper.CustomerMapper;
 import com.proyecto.customer.model.CustomerDTO;
 import com.proyecto.customer.model.CustomerRequestDTO;
-import com.proyecto.customer.model.CustomerSummaryDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +21,6 @@ public class CustomersController implements CustomersApi {
 
     private final CreateCustomerUseCase createCustomerUseCase;
     private final FindCustomerUseCase findCustomerUseCase;
-    private final GetCustomerSummaryUseCase summaryUseCase;
     private final CustomerMapper customerMapper;
 
     @Override
@@ -36,20 +33,30 @@ public class CustomersController implements CustomersApi {
     }
 
     @Override
+    public Mono<ResponseEntity<CustomerDTO>> customersDocumentNumberDocumentNumberGet(String documentNumber,
+                                                                    ServerWebExchange exchange) {
+        return findCustomerUseCase.findByDocumentNumber(documentNumber)
+                .map(customerMapper::toDto)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @Override
+    public Mono<ResponseEntity<CustomerDTO>> customersNumberPhoneNumberPhoneGet(String numberPhone,
+                                                                                      ServerWebExchange exchange) {
+        return findCustomerUseCase.findByNumberPhone(numberPhone)
+                .map(customerMapper::toDto)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+
+    @Override
     public Mono<ResponseEntity<Flux<CustomerDTO>>> customersGet(String type,
                                                                 ServerWebExchange exchange) {
         Flux<CustomerDTO> customers = findCustomerUseCase.findAll()
                 .map(customerMapper::toDto);
         return Mono.just(ResponseEntity.ok(customers));
-    }
-
-    @Override
-    public Mono<ResponseEntity<CustomerSummaryDTO>> customersCustomerIdSummaryGet(String customerId,
-                                                                                  ServerWebExchange exchange) {
-        return summaryUseCase.getSummary(customerId)
-                .map(customerMapper::toSummaryDto)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @Override
@@ -61,4 +68,5 @@ public class CustomersController implements CustomersApi {
                 .map(customerMapper::toDto)
                 .map(saved -> ResponseEntity.status(201).body(saved));
     }
+
 }

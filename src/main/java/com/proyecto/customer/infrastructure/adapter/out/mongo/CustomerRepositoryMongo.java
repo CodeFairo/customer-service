@@ -38,4 +38,14 @@ public class CustomerRepositoryMongo implements CustomerRepositoryPort {
     public Mono<Customer> findByDocumentTypeAndDocumentNumber(String docType, String docNumber) {
         return repository.findByDocumentTypeAndDocumentNumber(docType, docNumber);
     }
+
+    @Override
+    public Mono<Customer> findByDocumentNumber(String docNumber) {
+        return repository.findByDocumentNumber(docNumber);
+    }
+
+    @Override
+    public Mono<Customer> findByNumberPhone(String numberPhone) {
+        return repository.findByNumberPhone(numberPhone);
+    }
 }

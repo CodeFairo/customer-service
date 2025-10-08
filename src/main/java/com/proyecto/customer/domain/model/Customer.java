@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "customers") // nombre de la colección en Mongo
+@Document(collection = "customers")
 public class Customer {
 
     @Id
-    private String id; // Mongo lo usará como _id
+    private String id;
 
-    private String customerType; // PERSONAL | BUSINESS
+    private String customerType; // PERSONAL | BUSINESS | VIP | PYME
     private String documentType;
     private String documentNumber;
     private String firstName;
@@ -25,4 +25,5 @@ public class Customer {
     private String businessName;
     private String status; // ACTIVE | INACTIVE
     private LocalDateTime createdAt;
+    private String numberPhone;
 }
