@@ -10,4 +10,6 @@ public interface CustomerRepositoryPort {
     Flux<Customer> findAll();
     Mono<Void> deleteById(String id);
     Mono<Customer> findByDocumentTypeAndDocumentNumber(String docType, String docNumber);
+    Mono<Customer> findByDocumentNumber(String docNumber);
+    Mono<Customer> findByNumberPhone(String numberPhone);
 }

@@ -9,4 +9,6 @@ import reactor.core.publisher.Mono;
  */
 public interface SpringDataCustomerRepository extends ReactiveMongoRepository<Customer, String> {
     Mono<Customer> findByDocumentTypeAndDocumentNumber(String documentType, String documentNumber);
+    Mono<Customer> findByDocumentNumber(String documentNumber);
+    Mono<Customer> findByNumberPhone(String numberPhone);
 }

@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "WalletCreationRequestedEvent",
+  "namespace": "com.proyecto.wallet.avro",
+  "fields": [
+    { "name": "walletId", "type": "string" },
+    { "name": "documentType", "type": "string" },
+    { "name": "documentNumber", "type": "string" },
+    { "name": "phoneNumber", "type": "string" },
+    { "name": "lastName", "type": "string" },
+    { "name": "firstName", "type": "string" },
+    { "name": "createdAt", "type": "string" }
+  ]
+}

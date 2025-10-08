@@ -6,5 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface FindCustomerUseCase {
     Mono<Customer> findById(String id);
+    Mono<Customer> findByDocumentNumber(String documentNumber);
+    Mono<Customer> findByNumberPhone(String documentNumber);
     Flux<Customer> findAll();
 }

@@ -38,6 +38,7 @@ paths:
                 documentNumber: "12345678"
                 firstName: "Carlos"
                 lastName: "Ramírez"
+                numberPhone: "998564158"
                 status: ACTIVE
         '400': { description: Invalid input }
         '409': { description: Duplicate document }
@@ -67,11 +68,13 @@ paths:
                   documentType: DNI
                   documentNumber: "12345678"
                   status: ACTIVE
+                  numberPhone: "998564158"
                 - id: "cst-124"
                   customerType: BUSINESS
                   businessName: "Inversiones SAC"
                   documentType: RUC
                   documentNumber: "20123456789"
+                  numberPhone: "998564158"
                   status: ACTIVE
 
   /customers/{customerId}:
@@ -96,52 +99,75 @@ paths:
                 documentNumber: "12345678"
                 firstName: "Carlos"
                 lastName: "Ramírez"
+                numberPhone: "998564158"
                 status: ACTIVE
         '404': { description: Customer not found }
 
-  /customers/{customerId}/summary:
+  /customers/documentNumber/{documentNumber}:
     get:
-      tags: [Customers]
-      summary: Get consolidated summary of a customer
+      tags: [ Customers ]
+      summary: Get customer by documentNumber
       parameters:
-        - name: customerId
+        - name: documentNumber
           in: path
           required: true
           schema: { type: string }
       responses:
         '200':
-          description: Customer summary including accounts, credits, and cards
+          description: Customer details
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/CustomerSummaryDTO' }
+              schema: { $ref: '#/components/schemas/CustomerDTO' }
               example:
                 id: "cst-123"
-                fullName: "Carlos Ramírez"
-                accounts:
-                  - id: "acc-456"
-                    type: SAVINGS
-                    balance: 1500.75
-                credits:
-                  - id: "crd-789"
-                    type: PERSONAL
-                    outstandingBalance: 5000.00
-                cards:
-                  - id: "card-101"
-                    type: PERSONAL
-                    availableCredit: 2000.00
+                customerType: PERSONAL
+                documentType: DNI
+                documentNumber: "12345678"
+                firstName: "Carlos"
+                lastName: "Ramírez"
+                numberPhone: "998564158"
+                status: ACTIVE
+        '404': { description: Customer not found }
+
+  /customers/numberPhone/{numberPhone}:
+    get:
+      tags: [ Customers ]
+      summary: Get customer by numberPhone
+      parameters:
+        - name: numberPhone
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CustomerDTO' }
+              example:
+                id: "cst-123"
+                customerType: PERSONAL
+                documentType: DNI
+                documentNumber: "12345678"
+                firstName: "Carlos"
+                lastName: "Ramírez"
+                numberPhone: "998564158"
+                status: ACTIVE
+        '404': { description: Customer not found }
 
 components:
   schemas:
     CustomerRequestDTO:
       type: object
       properties:
-        customerType: { type: string, enum: [PERSONAL, BUSINESS] }
-        documentType: { type: string }
+        customerType: { type: string, enum: [PERSONAL, BUSINESS,VIP ,PYME] }
+        documentType: { type: string, enum: [RUC, DNI]}
         documentNumber: { type: string }
         firstName: { type: string }
         lastName: { type: string }
         businessName: { type: string }
-      required: [customerType, documentType, documentNumber]
+        numberPhone: { type: string }
+      required: [customerType, documentType, documentNumber, numberPhone]
 
     CustomerDTO:
       type: object
@@ -153,43 +179,5 @@ components:
         firstName: { type: string }
         lastName: { type: string }
         businessName: { type: string }
+        numberPhone: { type: string }
         status: { type: string, enum: [ACTIVE, INACTIVE] }
-
-    CustomerSummaryDTO:
-      type: object
-      properties:
-        id: { type: string }
-        fullName: { type: string }
-        accounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountSummaryDTO'
-        credits:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditSummaryDTO'
-        cards:
-          type: array
-          items:
-            $ref: '#/components/schemas/CardSummaryDTO'
-
-    AccountSummaryDTO:
-      type: object
-      properties:
-        id: { type: string }
-        type: { type: string }
-        balance: { type: number, format: double }
-
-    CreditSummaryDTO:
-      type: object
-      properties:
-        id: { type: string }
-        type: { type: string }
-        outstandingBalance: { type: number, format: double }
-
-    CardSummaryDTO:
-      type: object
-      properties:
-        id: { type: string }
-        type: { type: string }
-        availableCredit: { type: number, format: double }
